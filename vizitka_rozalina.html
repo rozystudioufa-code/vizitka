@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Розалина — Дизайнер</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #131936;
+      --accent1: #a78bfa;
+      --accent2: #60a5fa;
+      --accent3: #f472b6;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Animated background orbs */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 420px; height: 420px; background: var(--accent1); top: -120px; left: -120px; animation-duration: 14s; }
+    .orb2 { width: 320px; height: 320px; background: var(--accent2); bottom: -80px; right: -80px; animation-duration: 10s; animation-delay: -4s; }
+    .orb3 { width: 260px; height: 260px; background: var(--accent3); top: 40%; left: 50%; transform: translate(-50%,-50%); animation-duration: 16s; animation-delay: -8s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(26, 34, 69, 0.72);
+      border: 1px solid rgba(167, 139, 250, 0.18);
+      border-radius: 28px;
+      padding: 52px 48px 44px;
+      max-width: 440px;
+      width: 92vw;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 8px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: appear 0.7s cubic-bezier(.34,1.3,.64,1) both;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(32px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Avatar monogram */
+    .avatar-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(167,139,250,0.2), 0 0 32px rgba(167,139,250,0.3);
+      animation: pulse-ring 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(167,139,250,0.2), 0 0 32px rgba(167,139,250,0.3); }
+      50%       { box-shadow: 0 0 0 8px rgba(167,139,250,0.1), 0 0 52px rgba(167,139,250,0.45); }
+    }
+
+    /* Name */
+    .name {
+      text-align: center;
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #c4b5fd 0%, #93c5fd 45%, #f9a8d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 18px rgba(167,139,250,0.55));
+      margin-bottom: 8px;
+    }
+
+    /* Tagline */
+    .tagline {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    /* Skill tags */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+    .skill {
+      padding: 7px 18px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      border: 1px solid;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: default;
+    }
+    .skill:hover { transform: translateY(-2px); }
+
+    .skill-p { color: var(--accent1); border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+    .skill-p:hover { box-shadow: 0 0 16px rgba(167,139,250,0.4); }
+    .skill-l { color: var(--accent2); border-color: rgba(96,165,250,0.35); background: rgba(96,165,250,0.08); }
+    .skill-l:hover { box-shadow: 0 0 16px rgba(96,165,250,0.4); }
+    .skill-b { color: var(--accent3); border-color: rgba(244,114,182,0.35); background: rgba(244,114,182,0.08); }
+    .skill-b:hover { box-shadow: 0 0 16px rgba(244,114,182,0.4); }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.25), transparent);
+      margin-bottom: 32px;
+    }
+
+    /* Social icons */
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.22s cubic-bezier(.34,1.5,.64,1), box-shadow 0.22s ease, background 0.22s ease, color 0.22s ease;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .social-link:hover { transform: translateY(-4px) scale(1.1); }
+
+    .social-link.tg:hover  { background: rgba(39,174,233,0.18); box-shadow: 0 0 22px rgba(39,174,233,0.4); color: #29aee9; }
+    .social-link.vk:hover  { background: rgba(0,119,255,0.18);  box-shadow: 0 0 22px rgba(0,119,255,0.4);  color: #4c82d4; }
+    .social-link.inst:hover{ background: rgba(225,48,108,0.18); box-shadow: 0 0 22px rgba(225,48,108,0.4); color: #e1306c; }
+
+    .social-link svg { width: 22px; height: 22px; fill: currentColor; transition: fill 0.2s; }
+
+    /* CTA button */
+    .cta-wrap { display: flex; justify-content: center; }
+
+    .cta {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 36px;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      overflow: hidden;
+      transition: transform 0.2s cubic-bezier(.34,1.5,.64,1), box-shadow 0.2s ease;
+      box-shadow: 0 4px 24px rgba(124,58,237,0.45);
+    }
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #9f5cf7, #38bdf8);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .cta:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 36px rgba(124,58,237,0.6); }
+    .cta:hover::before { opacity: 1; }
+    .cta:active { transform: scale(0.97); }
+    .cta span, .cta svg { position: relative; z-index: 1; }
+
+    .cta-arrow {
+      width: 18px;
+      height: 18px;
+      animation: bob 2s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateX(0); }
+      50%       { transform: translateX(4px); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 40px 28px 36px; }
+      .name { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div class="card">
+
+    <div class="avatar-wrap">
+      <div class="avatar">Р</div>
+    </div>
+
+    <h1 class="name">Розалина</h1>
+    <p class="tagline">Графический дизайнер</p>
+
+    <div class="skills">
+      <span class="skill skill-p">Презентации</span>
+      <span class="skill skill-l">Логотипы</span>
+      <span class="skill skill-b">Баннеры</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="socials">
+
+      <!-- Telegram -->
+      <a href="https://t.me/sesha_nyan" target="_blank" rel="noopener" class="social-link tg" title="Telegram">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.944 0A12 12 0 1 0 24 12 12 12 0 0 0 11.944 0Zm5.97 7.404-2.055 9.687c-.155.692-.56.86-1.136.536l-3.143-2.315-1.517 1.46c-.168.168-.308.308-.632.308l.226-3.204 5.83-5.267c.254-.226-.055-.352-.39-.126l-7.207 4.538-3.104-.97c-.674-.21-.688-.674.141-.998l12.118-4.673c.561-.203 1.052.125.869.924Z"/>
+        </svg>
+      </a>
+
+      <!-- VK -->
+      <a href="#" class="social-link vk" title="ВКонтакте">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0Zm3.692 17.123h-1.744c-.66 0-.862-.523-2.047-1.709-1.033-1.033-1.49-.9-1.49.312v1.397c0 .395-.125.625-1.165.625-1.782 0-3.744-.98-5.12-2.748C5.62 12.785 4.873 10 4.873 9.762c0-.125.125-.25.417-.25h1.744c.312 0 .43.143.55.478.61 1.76 1.635 3.3 2.054 3.3.157 0 .23-.073.23-.473V10.69c-.047-.844-.49-.916-.49-1.218 0-.15.125-.3.325-.3h2.745c.26 0 .354.142.354.45v3.05c0 .26.118.353.19.353.157 0 .29-.093.577-.38 1.095-1.23 1.87-3.125 1.87-3.125.104-.208.26-.403.572-.403h1.744c.527 0 .64.27.527.648-.22 1.024-2.326 3.985-2.326 3.985-.187.3-.25.435 0 .77.188.27.8.835 1.21 1.338.75.88 1.326 1.617 1.48 2.125.166.506-.098.76-.607.76Z"/>
+        </svg>
+      </a>
+
+      <!-- Instagram -->
+      <a href="#" class="social-link inst" title="Instagram">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069ZM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0Zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881Z"/>
+        </svg>
+      </a>
+
+    </div>
+
+    <div class="cta-wrap">
+      <a href="https://t.me/sesha_nyan" target="_blank" rel="noopener" class="cta">
+        <span>Написать мне</span>
+        <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14M13 5l7 7-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+
+</body>
+</html>
