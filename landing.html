@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuroPost — AI-контент без усилий</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #a855f7;
+      --indigo: #6366f1;
+      --bg: #080810;
+      --card-bg: #0e0e1a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(168,85,247,0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Background orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(110px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(168,85,247,0.11), transparent 70%); top: -250px; left: -250px; }
+    .orb2 { width: 550px; height: 550px; background: radial-gradient(circle, rgba(99,102,241,0.09), transparent 70%); bottom: -100px; right: -180px; }
+    .orb3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(168,85,247,0.06), transparent 70%); top: 55%; left: 45%; }
+
+    /* ── Dot grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(168,85,247,0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      background: rgba(8,8,16,0.75);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 1.05rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #c084fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.01em;
+    }
+    .nav-cta {
+      display: inline-block;
+      padding: 0.45rem 1.2rem;
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #c084fc;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .nav-cta:hover { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.5); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 7rem 0 5.5rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      color: #c084fc;
+      margin-bottom: 2rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .grad {
+      background: linear-gradient(135deg, #e879f9 0%, #818cf8 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .cta-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    /* ── Button ── */
+    .btn-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2.4rem;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 100px;
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 100px;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      opacity: 0.35;
+      filter: blur(14px);
+      animation: pulse 2.2s ease-in-out infinite;
+      z-index: -1;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(168,85,247,0.45); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50%       { opacity: 0.6;  transform: scale(1.06); }
+    }
+
+    .cta-hint {
+      font-size: 0.83rem;
+      color: var(--muted);
+      opacity: 0.75;
+    }
+
+    .cta-link {
+      font-size: 0.83rem;
+      color: var(--muted);
+      opacity: 0.65;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .cta-link:hover { opacity: 1; color: #c084fc; }
+
+    /* ── Stats row ── */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: clamp(2rem, 6vw, 5rem);
+      flex-wrap: wrap;
+      padding: 2.5rem 0 4rem;
+      animation: fadeUp 0.7s 0.45s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #c084fc, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── Section shared ── */
+    section { padding: 5.5rem 0; }
+
+    .s-label {
+      text-align: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #c084fc;
+      margin-bottom: 0.6rem;
+    }
+
+    .s-title {
+      text-align: center;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.85rem;
+    }
+
+    .s-desc {
+      text-align: center;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 3.5rem;
+      font-size: 0.98rem;
+    }
+
+    .divider {
+      width: 56px;
+      height: 3px;
+      background: linear-gradient(90deg, #a855f7, #6366f1);
+      border-radius: 2px;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* ── Feature cards ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem 1.75rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    .feat-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(168,85,247,0.4);
+      box-shadow: 0 0 50px rgba(168,85,247,0.1), 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .feat-card.in { animation: fadeUp 0.6s ease forwards; }
+
+    .icon-wrap {
+      width: 52px; height: 52px;
+      background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.22);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .feat-card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feat-card p  { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── For whom ── */
+    .for-whom {
+      background: linear-gradient(180deg, transparent, rgba(168,85,247,0.03), transparent);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .aud-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .aud-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem 1.25rem;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: border-color 0.3s;
+    }
+    .aud-card:hover { border-color: rgba(168,85,247,0.35); }
+    .aud-card.in { animation: fadeUp 0.6s ease forwards; }
+
+    .aud-emoji { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .aud-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .aud-card p  { font-size: 0.84rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── Benefits ── */
+    .ben-list {
+      max-width: 660px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ben-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.35rem 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: border-color 0.3s;
+    }
+    .ben-row:hover { border-color: rgba(168,85,247,0.35); }
+    .ben-row.in { animation: fadeUp 0.6s ease forwards; }
+
+    .ben-num {
+      flex-shrink: 0;
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .ben-row h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .ben-row p  { font-size: 0.86rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Final CTA ── */
+    .final {
+      text-align: center;
+      padding: 7rem 0 6rem;
+    }
+
+    .final-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3.5rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-box::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 200px;
+      background: radial-gradient(ellipse, rgba(168,85,247,0.14), transparent 70%);
+      pointer-events: none;
+    }
+
+    .final h2 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .final p {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      font-size: 1rem;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.78rem;
+      color: rgba(148,163,184,0.4);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 600px) {
+      .hero { padding: 5rem 0 3rem; }
+      .stats { gap: 2rem; }
+      .feat-card, .aud-card { padding: 1.5rem 1.25rem; }
+      .final-box { border-radius: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <span class="logo">NeuroPost</span>
+    <a href="https://t.me/RazilyaWB" class="nav-cta" target="_blank" rel="noopener">Написать в Telegram</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="#c084fc"><path d="M12 2l2.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.91-1.01L12 2z"/></svg>
+      AI-помощник нового поколения
+    </div>
+
+    <h1>Контент, который<br/><span class="grad">работает за вас</span></h1>
+
+    <p class="hero-desc">
+      NeuroPost — AI-бот для экспертов и малого бизнеса. Генерирует посты, строит контент-план и публикует всё сам — пока вы занимаетесь делом.
+    </p>
+
+    <div class="cta-wrap">
+      <a href="https://t.me/RazilyaWB" class="btn-primary" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Попробовать бесплатно
+      </a>
+      <span class="cta-hint">Первый контент-план — в подарок</span>
+      <a href="https://t.me/RazilyaWB" class="cta-link" target="_blank" rel="noopener">t.me/RazilyaWB</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">5 мин</div>
+        <div class="stat-label">контент-план на месяц</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">соцсети одновременно</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0 ₽</div>
+        <div class="stat-label">на SMM-специалиста</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section>
+  <div class="container">
+    <div class="s-label">Преимущества</div>
+    <h2 class="s-title">Три причины выбрать <span class="grad">NeuroPost</span></h2>
+    <p class="s-desc">Забудьте о пустом экране, пропущенных постах и дорогих SMM-специалистах</p>
+
+    <div class="cards-grid">
+
+      <div class="feat-card">
+        <div class="icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9.5" stroke="#a855f7" stroke-width="1.5"/>
+            <path d="M12 7v5l3.5 2" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Время — ваш главный ресурс</h3>
+        <p>Контент-план на целый месяц готов за 5 минут. Идеи, тексты и расписание AI генерирует автоматически. Вы только выбираете и публикуете — или даже этого не делаете.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+            <rect x="2" y="3" width="20" height="14" rx="3" stroke="#a855f7" stroke-width="1.5"/>
+            <path d="M8 21h8M12 17v4" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7 10l3 3 5-5" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Автопубликация 24/7</h3>
+        <p>Бот сам постит в Telegram, Instagram и ВКонтакте в нужное время. Ни одного пропущенного поста — даже когда вы в отпуске, на переговорах или просто спите.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="icon-wrap">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="#a855f7" stroke-width="1.5"/>
+            <path d="M8.5 14.5s1 1.5 3.5 1.5 3.5-1.5 3.5-1.5" stroke="#a855f7" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 10h.01M15 10h.01" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Ваш голос, ваш стиль</h3>
+        <p>AI изучает вашу тематику, экспертизу и манеру общения. Тексты звучат именно как вы — только быстрее и без творческого кризиса в 23:00.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- For whom -->
+<section class="for-whom">
+  <div class="container">
+    <div class="s-label">Аудитория</div>
+    <h2 class="s-title">Для кого подходит</h2>
+    <div class="divider"></div>
+
+    <div class="aud-grid">
+      <div class="aud-card">
+        <div class="aud-emoji">🎯</div>
+        <h4>Эксперт или специалист</h4>
+        <p>Вам есть что сказать, но нет времени писать посты каждый день — и вы теряете аудиторию</p>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">🏪</div>
+        <h4>Малый бизнес</h4>
+        <p>Нужен стабильный поток контента, но нанимать SMM дорого, а самому некогда</p>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">🚀</div>
+        <h4>Предприниматель</h4>
+        <p>Хотите расти в соцсетях, не отвлекаясь от основного бизнеса и команды</p>
+      </div>
+      <div class="aud-card">
+        <div class="aud-emoji">✍️</div>
+        <h4>Блогер / инфобизнес</h4>
+        <p>Нужен регулярный контент, который вовлекает, строит доверие и продаёт</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits -->
+<section>
+  <div class="container">
+    <div class="s-label">Выгода</div>
+    <h2 class="s-title">Почему это <span class="grad">выгодно</span></h2>
+    <p class="s-desc">Честное сравнение с альтернативами — считайте сами</p>
+
+    <div class="ben-list">
+      <div class="ben-row">
+        <div class="ben-num">1</div>
+        <div>
+          <h4>Дешевле SMM-специалиста в разы</h4>
+          <p>Хороший SMM стоит от 30 000 ₽/месяц. NeuroPost делает ту же работу быстрее, без выходных и без человеческого фактора.</p>
+        </div>
+      </div>
+      <div class="ben-row">
+        <div class="ben-num">2</div>
+        <div>
+          <h4>Регулярность = рост аудитории и продаж</h4>
+          <p>Алгоритмы соцсетей любят постоянство. Стабильные публикации дают охваты, доверие подписчиков и новых клиентов — автоматически.</p>
+        </div>
+      </div>
+      <div class="ben-row">
+        <div class="ben-num">3</div>
+        <div>
+          <h4>Работает без вас, всегда и везде</h4>
+          <p>Бот не уходит в отпуск, не болеет, не пропадает. Контент выходит по расписанию 365 дней в году — вы только наблюдаете за ростом.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final">
+  <div class="container">
+    <div class="final-box">
+      <h2>Готовы делегировать<br/><span class="grad">контент AI?</span></h2>
+      <p>Напишите в Telegram — и получите первый контент-план бесплатно уже сегодня</p>
+      <div class="cta-wrap">
+        <a href="https://t.me/RazilyaWB" class="btn-primary" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Написать в Telegram
+        </a>
+        <a href="https://t.me/RazilyaWB" class="cta-link" target="_blank" rel="noopener">t.me/RazilyaWB</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 NeuroPost · AI-контент для экспертов и бизнеса
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.feat-card').forEach((el, i) => {
+    el.style.animationDelay = (i * 0.13) + 's';
+    observer.observe(el);
+  });
+
+  document.querySelectorAll('.aud-card').forEach((el, i) => {
+    el.style.animationDelay = (i * 0.1) + 's';
+    observer.observe(el);
+  });
+
+  document.querySelectorAll('.ben-row').forEach((el, i) => {
+    el.style.animationDelay = (i * 0.12) + 's';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
