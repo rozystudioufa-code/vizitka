@@ -272,15 +272,13 @@
       border-radius: 20px;
       padding: 2rem 1.75rem;
       transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      opacity: 0;
-      transform: translateY(32px);
+      animation: fadeUp 0.6s ease both;
     }
     .feat-card:hover {
       transform: translateY(-5px);
       border-color: rgba(168,85,247,0.4);
       box-shadow: 0 0 50px rgba(168,85,247,0.1), 0 20px 40px rgba(0,0,0,0.4);
     }
-    .feat-card.in { animation: fadeUp 0.6s ease forwards; }
 
     .icon-wrap {
       width: 52px; height: 52px;
@@ -314,12 +312,10 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 1.5rem 1.25rem;
-      opacity: 0;
-      transform: translateY(28px);
       transition: border-color 0.3s;
+      animation: fadeUp 0.6s ease both;
     }
     .aud-card:hover { border-color: rgba(168,85,247,0.35); }
-    .aud-card.in { animation: fadeUp 0.6s ease forwards; }
 
     .aud-emoji { font-size: 1.8rem; margin-bottom: 0.75rem; }
     .aud-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.35rem; }
@@ -342,12 +338,10 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 1.35rem 1.5rem;
-      opacity: 0;
-      transform: translateY(20px);
       transition: border-color 0.3s;
+      animation: fadeUp 0.6s ease both;
     }
     .ben-row:hover { border-color: rgba(168,85,247,0.35); }
-    .ben-row.in { animation: fadeUp 0.6s ease forwards; }
 
     .ben-num {
       flex-shrink: 0;
@@ -618,39 +612,14 @@
 </footer>
 
 <script>
-  const targets = [
-    { sel: '.feat-card', delay: 0.13 },
-    { sel: '.aud-card',  delay: 0.10 },
-    { sel: '.ben-row',   delay: 0.12 },
-  ];
-
-  const allEls = [];
-  targets.forEach(({ sel, delay }) => {
+  [
+    ['.feat-card', 0.13],
+    ['.aud-card',  0.10],
+    ['.ben-row',   0.12],
+  ].forEach(([sel, delay]) => {
     document.querySelectorAll(sel).forEach((el, i) => {
       el.style.animationDelay = (i * delay) + 's';
-      allEls.push(el);
     });
-  });
-
-  // Fallback: если через 1.5с анимация не сработала — показываем всё
-  const fallback = setTimeout(() => {
-    allEls.forEach(el => el.classList.add('in'));
-  }, 1500);
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.05, rootMargin: '0px 0px 40px 0px' });
-
-  allEls.forEach(el => observer.observe(el));
-
-  // Если все уже видны — снимаем fallback
-  window.addEventListener('load', () => {
-    setTimeout(() => clearTimeout(fallback), 100);
   });
 </script>
 </body>
